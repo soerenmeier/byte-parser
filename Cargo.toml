@@ -1,7 +1,7 @@
 [package]
 name = "byte-parser"
 description = "Parse a str or a slice with a function style"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["Sören Meier <soeren@s-me.ch>"]
 repository = "https://github.com/soerenmeier/byte-parser"
 readme = "README.md"
@@ -18,3 +18,5 @@ rustdoc-args = ["--cfg", "docsrs"]
 "unstable-parse-iter" = []
 
 [dependencies]
+
+# test docs with: RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --all-features --open

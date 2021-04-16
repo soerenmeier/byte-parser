@@ -120,6 +120,8 @@
 //! assert!("5.42 ".parse::<Number>().is_err());
 //! ```
 
+#![cfg_attr(docsrs, feature(doc_cfg))]
+
 pub mod position;
 mod parse_iterator;
 mod expect_byte;
