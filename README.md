@@ -1,3 +1,7 @@
+[![CI](https://github.com/soerenmeier/byte-parser/actions/workflows/ci.yml/badge.svg)](https://github.com/soerenmeier/byte-parser/actions/workflows/ci.yml)
+[![crates.io](https://img.shields.io/crates/v/byte-parser)](https://crates.io/crates/byte-parser)
+[![docs.rs](https://img.shields.io/docsrs/byte-parser)](https://docs.rs/byte-parser)
+
 # Byte Parser
 A library that provides a functional way to easely parse a string or a slice.
 

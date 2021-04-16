@@ -1,9 +1,10 @@
 [package]
 name = "byte-parser"
 description = "Parse a str or a slice with a function style"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Sören Meier <soeren@s-me.ch>"]
 repository = "https://github.com/soerenmeier/byte-parser"
+readme = "README.md"
 edition = "2018"
 license = "MIT OR Apache-2.0"
 keywords = ["parser", "parsing"]
