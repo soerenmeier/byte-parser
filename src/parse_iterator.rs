@@ -65,7 +65,8 @@ pub trait ParseIterator<'s> {// s for slice
 		self.byte()
 	}
 
-	/// Advances one if `next_if` returns `true`.
+	/// Advances one if `next_if` returns `true`. 
+	/// Returns `None` if did not advance.
 	#[inline]
 	fn next_if<F>(&mut self, next_if: F) -> Option<u8>
 	where F: FnOnce(&u8) -> bool {
@@ -113,8 +114,8 @@ pub trait ParseIterator<'s> {// s for slice
 	/// Skips a given byte when calling next.
 	///
 	/// ## Warning
-	/// If you later call `to_slice` or a similar method
-	/// the skiped byte will still be returned.
+	/// If you later call `to_slice` or a similar methods
+	/// the skipped byte will still be returned.
 	///
 	/// ## Example
 	/// ```

@@ -50,8 +50,8 @@ pub enum Number {
 }
 
 impl Number {
-        /// # Panics
-        /// Panics if invalid utf8 is found.
+    /// # Panics
+    /// Panics if invalid utf8 is found.
     /// Or if the digit is to large.
     pub fn from_parser<'s, I>(iter: &mut I) -> Option<Self>
     where I: ParseIterator<'s> {

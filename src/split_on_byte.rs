@@ -50,7 +50,7 @@ where T: ParseIterator<'s> {
 		self.inner.reach_split_byte()?;
 		self.inner.pit.record_pos = None;// can this break when we use revert?
 
-		Some( &mut self.inner )
+		Some(&mut self.inner)
 	}
 
 	// for_each
@@ -85,7 +85,7 @@ where T: ParseIterator<'s> {
 pub struct SplitOnBytePointInTime {
 	pos: Position,// this value should never be read unless it is returned from fn pit()
 	byte_reached: bool,
-	record_pos: Option<Position>
+	record_pos: Option<Position>// used so that we not return the split byte
 }
 
 impl PointInTime for SplitOnBytePointInTime {
@@ -104,8 +104,7 @@ impl PointInTime for SplitOnBytePointInTime {
 			None => self.pos
 		}
 	}
-	// custom record pos???
-	// to make - record pos
+
 }
 
 
@@ -128,10 +127,6 @@ where T: ParseIterator<'s> {
 
 		Self {inner, byte, pit}
 	}
-}
-
-impl<'s, 'a, T> SplitOnByteIter<'a, T>
-where T: ParseIterator<'s> {
 
 	pub(super) fn reach_split_byte(&mut self) -> Option<()> {
 
@@ -145,7 +140,6 @@ where T: ParseIterator<'s> {
 			None
 		}
 	}
-
 }
 
 impl<'s, 'a, T> ParseIterator<'s> for SplitOnByteIter<'a, T>
@@ -222,20 +216,17 @@ mod tests {
 		let mut parser_split = parser.split_on_byte(b' ');
 
 		let my = parser_split.next().unwrap();
-
 		assert_eq!( b'm', my.next().unwrap() );
 		assert_eq!( b'y', my.next().unwrap() );
 		assert!( my.next().is_none() );
 
 		let byte = parser_split.next().unwrap();
-
 		assert_eq!( b'b', byte.next().unwrap() );
 		assert_eq!( b'y', byte.next().unwrap() );
 		// skip the rest
 		//assert!( my.next().is_none() );
 
 		let str_part = parser_split.next().unwrap();
-
 		assert_eq!( b's', str_part.next().unwrap() );
 
 		assert!( parser_split.next().is_none() );

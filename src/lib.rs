@@ -114,7 +114,7 @@
 //!
 //! assert_eq!(Number::Float(1.23), "1.23".parse().unwrap());
 //! assert_eq!(Number::Float(-32.1), "-32.1".parse().unwrap());
-//! assert_eq!(Number::Uint(42), "42".parse().unwrap());
+//! assert_eq!(Number::Uint(420), "420".parse().unwrap());
 //! assert_eq!(Number::Integer(-42), "-42".parse().unwrap());
 //! assert!(".42".parse::<Number>().is_err());
 //! assert!("5.42 ".parse::<Number>().is_err());
@@ -209,9 +209,7 @@ impl<'s> StrParser<'s> {
 	pub fn new(inner: &'s str) -> Self {
 		Self {
 			inner,
-			pit: ParserPointInTime {
-				pos: Position::null()
-			}
+			pit: ParserPointInTime::new()
 		}
 	}
 

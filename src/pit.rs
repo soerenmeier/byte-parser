@@ -23,6 +23,14 @@ pub struct ParserPointInTime {
 	pub(crate) pos: Position
 }
 
+impl ParserPointInTime {
+	pub(crate) fn new() -> Self {
+		Self {
+			pos: Position::null()
+		}
+	}
+}
+
 impl PointInTime for ParserPointInTime {
 	fn pos(&self) -> Position {
 		self.pos
@@ -32,4 +40,3 @@ impl PointInTime for ParserPointInTime {
 		self.pos = pos;
 	}
 }
-
