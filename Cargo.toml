@@ -9,6 +9,11 @@ license = "MIT OR Apache-2.0"
 keywords = ["parser", "parsing"]
 categories = ["parsing"]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[features]
+"unstable-parse-iter" = []
 
 [dependencies]

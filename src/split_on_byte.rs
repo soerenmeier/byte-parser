@@ -121,7 +121,10 @@ where T: ParseIterator<'s> {
 
 		let pit = SplitOnBytePointInTime {
 			pos: inner.pit().pos(),
-			byte_reached: true,// true so first call does not skip first 'iteration'
+			// if the inner iterator has not already reached the end
+			// we want to set byte_reached to true so that we don't skip
+			// the first segment (part)
+			byte_reached: inner.peek().is_some(),
 			record_pos: None
 		};
 
@@ -268,6 +271,32 @@ mod tests {
 
 			} );
 
+	}
+
+	#[test]
+	fn return_empty_str() {
+		let mut s = StrParser::new("a ");
+		let mut split = s.split_on_byte(b' ');
+		let a = split.next().unwrap().record().consume_to_str();
+		assert_eq!(a, "a");
+		let none = split.next().unwrap().record().consume_to_str();
+		assert_eq!(none, "");
+		assert!(split.next().is_none());
+	}
+
+	#[test]
+	fn restoring_at_the_end_could_return_infinitely() {
+		let mut s = StrParser::new("a b");
+		let mut split = s.split_on_byte(b' ');
+		let _ = split.next().unwrap();
+		let _ = split.next().unwrap();
+		assert!(split.next().is_none());
+		let pit = s.pit();
+		let mut s = StrParser::new("a b");
+		s.restore_pit(pit);
+		assert!(s.next().is_none());
+		let mut split = s.split_on_byte(b' ');
+		assert!(split.next().is_none());
 	}
 
 }

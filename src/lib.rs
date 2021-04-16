@@ -129,6 +129,9 @@ pub mod split_on_byte;
 pub mod recorder;
 pub mod stop;
 pub mod pit;
+#[cfg(feature = "unstable-parse-iter")]
+#[cfg_attr(docsrs, doc(cfg(feature = "unstable-parse-iter")))]
+pub mod parse_iter;
 
 pub use parse_iterator::ParseIterator;
 pub use expect_byte::ExpectByte;
@@ -253,6 +256,53 @@ impl<'s> ParseIterator<'s> for StrParser<'s> {
 
 }
 
+#[cfg(feature = "unstable-parse-iter")]
+#[cfg_attr(docsrs, doc(cfg(feature = "unstable-parse-iter")))]
+/// From a `ParseIterator` generate an `Iterator`.
+/// 
+/// ## Example parsing arguments
+/// ```
+/// # use byte_parser::{StrParser, ParseIterator, parse_iter};
+/// fn args(arg_str: &str) -> impl Iterator<Item=&str> {
+/// 	parse_iter(
+/// 		StrParser::new(arg_str),
+/// 		|parser| {
+///
+/// 			// if we are in a string
+/// 			if parser.advance_if(|&b| b == b'\'')? {
+/// 				let s = parser.record()
+/// 					.while_byte_fn(|&b| b != b'\'')
+/// 					.consume_to_str();
+///
+/// 				// consume the ending ' and
+/// 				// if a space follows consume it to
+/// 				parser.advance();
+/// 				parser.advance_if(|&b| b == b' ');
+/// 				return Some(s)
+/// 			}
+///
+/// 			// consume until a whitespace or an '
+/// 			let s = parser.record()
+/// 				.while_byte_fn(|&b| !matches!(b, b' ' | b'\''))
+/// 				.consume_to_str();
+/// 			
+/// 			// skip an empty space
+/// 			parser.advance_if(|&b| b == b' ');
+/// 
+/// 			Some(s)
+/// 		}
+/// 	)
+/// }
+/// 
+/// let args: Vec<_> = args("arg1 'arg 2' arg3'arg 4'arg5").collect();
+/// assert_eq!(args, ["arg1", "arg 2", "arg3", "arg 4", "arg5"]);
+/// ```
+pub fn parse_iter<'s, I, F, O>(i: I, f: F) -> parse_iter::ParseIter<I, F>
+where
+	I: ParseIterator<'s>,
+	F: FnMut(&mut I) -> Option<O> {
+	parse_iter::ParseIter::new(i, f)
+}
 
 // TESTS
 #[cfg(test)]
@@ -300,6 +350,39 @@ mod tests {
 		let mut parser = parser.record();
 		assert_eq!("byte str", parser.consume_to_str());
 
+	}
+
+	#[test]
+	fn create_an_iterator() {
+		fn make_iter(s: &str) -> impl Iterator<Item=&str> {
+			let mut parser = StrParser::new(s);
+			std::iter::from_fn(move || {
+				let mut split = parser.split_on_byte(b' ');
+				let n = split.next()?;// probably split_on_byte to already move position to
+				Some(n.record().consume_to_str())
+			})
+		}
+		let mut iter = make_iter("my byte str");
+		assert_eq!(iter.next().unwrap(), "my");
+		assert_eq!(iter.next().unwrap(), "byte");
+		assert_eq!(iter.next().unwrap(), "str");
+		assert!(iter.next().is_none());
+	}
+
+	#[cfg(feature = "unstable-parse-iter")]
+	#[test]
+	fn test_parse_iter() {
+		let mut iter = parse_iter(
+			StrParser::new("my str"),
+			|parser| {
+				let mut split = parser.split_on_byte(b' ');
+				split.next()
+					.map(|n| n.record().consume_to_str())
+			}
+		);
+		assert_eq!(iter.next().unwrap(), "my");
+		assert_eq!(iter.next().unwrap(), "str");
+		assert!(iter.next().is_none());
 	}
 
 }
