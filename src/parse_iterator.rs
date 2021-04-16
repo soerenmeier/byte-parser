@@ -39,6 +39,16 @@ pub trait ParseIterator<'s> {// s for slice
 	/// Returns a `Recorder` if recording was started.
 	fn recorder(&self) -> Option<&Recorder>;
 
+	/// Advances if `advance_if` returns `true`. 
+	/// Returns `None` if the iterator is empty.
+	fn advance_if<F>(&mut self, advance_if: F) -> Option<bool>
+	where F: FnOnce(&u8) -> bool {
+		match advance_if(&self.peek()?) {
+			true => self.advance().map(|_| true),
+			false => Some(false)
+		}
+	}
+
 	/// Returns the current byte if it exists.
 	#[inline]
 	fn byte(&self) -> Option<u8> {
@@ -469,12 +479,26 @@ mod tests {
 	}
 
 	#[test]
+	fn advance_if() {
+
+		let mut parser = Parser::new(b"ab");
+
+		assert!(parser.advance_if(|&b| b == b'a').unwrap());
+		assert!(!parser.advance_if(|&b| b == b'a').unwrap());
+		assert!(parser.advance_if(|&b| b == b'b').unwrap());
+		assert!(parser.advance_if(|&b| b == b'b').is_none());
+
+	}
+
+	#[test]
 	fn next_if() {
 
-		let s = b"ab";
+		let mut parser = Parser::new(b"ab");
 
-		assert_eq!( b'a', Parser::new(s).next_if(|&b| b == b'a').unwrap() );
-		assert!( Parser::new(s).next_if(|&b| b == b'b').is_none() );
+		assert_eq!(parser.next_if(|&b| b == b'a').unwrap(), b'a');
+		assert!(parser.next_if(|&b| b == b'x').is_none());
+		assert_eq!(parser.next_if(|&b| b == b'b').unwrap(), b'b');
+		assert!(parser.next_if(|&b| b == b'x').is_none());
 
 	}
 
