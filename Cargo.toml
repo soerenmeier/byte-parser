@@ -1,14 +1,15 @@
 [package]
 name = "byte-parser"
 description = "Parse a str or a slice with a function style"
-version = "0.2.2"
+version = "0.2.3"
 authors = ["Sören Meier <soeren@s-me.ch>"]
 repository = "https://github.com/soerenmeier/byte-parser"
 readme = "README.md"
-edition = "2018"
+edition = "2021"
 license = "MIT OR Apache-2.0"
 keywords = ["parser", "parsing"]
 categories = ["parsing"]
+rust-version = "1.56"
 
 [package.metadata.docs.rs]
 all-features = true
